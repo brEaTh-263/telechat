@@ -1,21 +1,35 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
+import { createStore, combineReducers, applyMiddleware } from "redux";
+import { Provider } from "react-redux";
+import ReduxThunk from "redux-thunk";
+import AuthReducer from "./src/store/reducers/Auth";
+import AppNavigator from "./src/navigator/AppNavigator";
+import Colors from "./src/constants/Colors";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+const rootReducer = combineReducers({
+	Auth: AuthReducer,
 });
+
+const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
+const theme = {
+	...DefaultTheme,
+	colors: {
+		...DefaultTheme.colors,
+		primary: Colors.primary,
+		accent: Colors.accent,
+		background: Colors.background,
+		text: "white",
+	},
+};
+const App = () => {
+	return (
+		<Provider store={store}>
+			<PaperProvider theme={theme}>
+				<AppNavigator />
+			</PaperProvider>
+		</Provider>
+	);
+};
+
+export default App;
