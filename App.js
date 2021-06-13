@@ -19,7 +19,7 @@ const theme = {
 		primary: Colors.primary,
 		accent: Colors.accent,
 		background: Colors.background,
-		text: "white",
+		text: "#fff",
 	},
 };
 const App = () => {
