@@ -1,14 +1,24 @@
+import { SIGN_IN } from "../actions/auth";
+
 const initialState = {
-  token: '',
-  _id: '',
-  didTryAutoLogin: false,
-  isAuth: false,
+	token: "",
+	didTryAutoLogin: false,
+	isAuth: false,
+	_id: "",
 };
 
 export default (state = initialState, action) => {
-  switch (action.type) {
-    default: {
-      return state;
-    }
-  }
+	switch (action.type) {
+		case SIGN_IN: {
+			return {
+				isAuth: true,
+				didTryAutoLogin: true,
+				token: action.payload.token,
+				_id: action.payload._id,
+			};
+		}
+		default: {
+			return state;
+		}
+	}
 };

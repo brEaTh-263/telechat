@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { View, SafeAreaView, Text, StyleSheet, Image } from "react-native";
 import Colors from "../constants/Colors";
+import * as authActions from "../store/actions/Auth";
+import { useDispatch } from "react-redux";
 import { TextInput, Button } from "react-native-paper";
 import Toast, { BaseToast } from "react-native-toast-message";
+import LoadingScreen from "./LoadingScreen";
 export default function SignInScreen({ navigation }) {
 	const [name, setName] = useState("");
 	const [phoneNumber, setPhoneNumber] = useState("");
-
+	const [isLoading, setIsLoading] = useState(false);
+	const dispatch = useDispatch();
 	const toastConfig = {
 		error: ({ text1, props, ...rest }) => {
 			return (
@@ -26,7 +30,7 @@ export default function SignInScreen({ navigation }) {
 		},
 	};
 
-	const onSendOtpHandler = () => {
+	const onSendOtpHandler = async () => {
 		if (name.length === 0) {
 			Toast.show({
 				type: "error",
@@ -39,14 +43,28 @@ export default function SignInScreen({ navigation }) {
 		if (phoneNumber.length != 10) {
 			Toast.show({
 				type: "error",
-				text1: "",
+				text1: "Must be 10-digit number",
 				position: "bottom",
 				bottomOffset: 80,
 			});
 			return;
 		}
-		navigation.navigate("Otp", { phoneNumber: phoneNumber, name: name });
+		try {
+			setIsLoading(true);
+			await dispatch(authActions.signIn(phoneNumber));
+			setIsLoading(false);
+			navigation.navigate("Otp", { phoneNumber: phoneNumber, name: name });
+		} catch (error) {
+			console.log(error);
+			setIsLoading(false);
+			alert("Something went wrong");
+		}
 	};
+
+	if (isLoading) {
+		return <LoadingScreen />;
+	}
+
 	return (
 		<SafeAreaView style={styles.container}>
 			<View style={{ height: "10%" }} />
