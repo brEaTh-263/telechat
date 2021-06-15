@@ -5,7 +5,7 @@ import {
 	InputToolbar,
 	Send,
 } from "react-native-gifted-chat";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
 	View,
 	SafeAreaView,
@@ -13,6 +13,7 @@ import {
 	StyleSheet,
 	TouchableOpacity,
 } from "react-native";
+import * as chatActions from "../store/actions/Chats";
 import Colors from "../constants/Colors";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { Avatar } from "react-native-paper";
@@ -20,9 +21,13 @@ import { Avatar } from "react-native-paper";
 const ChatScreen = ({ route }) => {
 	const [messages, setMessages] = useState([]);
 	const userDetails = useSelector((state) => state.Auth);
+	const dispatch = useDispatch();
 	const { receiverName, receiverId, receiverDisplayPicture } = route.params;
 	const onSend = useCallback((messages = []) => {
 		console.log(messages);
+		dispatch(
+			chatActions.sendMessage(messages[messages.length - 1], receiverId)
+		);
 		setMessages((previousMessages) =>
 			GiftedChat.append(previousMessages, messages)
 		);
@@ -80,20 +85,6 @@ const ChatScreen = ({ route }) => {
 			</Send>
 		);
 	};
-	useEffect(() => {
-		setMessages([
-			{
-				_id: 1,
-				text: "Hello developer",
-				createdAt: new Date(),
-				user: {
-					_id: 2,
-					name: "React Native",
-					avatar: "https://placeimg.com/140/140/any",
-				},
-			},
-		]);
-	}, []);
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
