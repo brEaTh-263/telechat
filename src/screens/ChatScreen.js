@@ -6,6 +6,7 @@ import {
 	Send,
 } from "react-native-gifted-chat";
 import { useSelector, useDispatch } from "react-redux";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import {
 	View,
 	SafeAreaView,
@@ -17,21 +18,64 @@ import * as chatActions from "../store/actions/Chats";
 import Colors from "../constants/Colors";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { Avatar } from "react-native-paper";
+import socket from "../socketIo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const ChatScreen = ({ route }) => {
+const ChatScreen = ({ route, navigation }) => {
 	const [messages, setMessages] = useState([]);
 	const userDetails = useSelector((state) => state.Auth);
 	const dispatch = useDispatch();
 	const { receiverName, receiverId, receiverDisplayPicture } = route.params;
+	const isFocused = useIsFocused();
 	const onSend = useCallback((messages = []) => {
-		console.log(messages);
-		dispatch(
-			chatActions.sendMessage(messages[messages.length - 1], receiverId)
-		);
+		console.log("Pushing some message");
+		socket.emit("private message", {
+			content: messages[messages.length - 1],
+			to: receiverId,
+		});
 		setMessages((previousMessages) =>
 			GiftedChat.append(previousMessages, messages)
 		);
 	}, []);
+	useEffect(() => {
+		socket.on("private message", ({ content, from }) => {
+			console.log("Getting some message");
+			console.log(isFocused);
+			if (!isFocused) {
+				console.log("NOT FOCUSED");
+				console.log(content);
+				return;
+			}
+			setMessages((previousMessages) =>
+				GiftedChat.append(previousMessages, [content])
+			);
+		});
+	}, []);
+
+	useEffect(() => {
+		console.log("Getting room info");
+		socket.on("room", async ({ roomId }) => {
+			socket.auth = { roomId };
+			AsyncStorage.getItem("rooms", (err, result) => {
+				const allRooms = JSON.parse(result);
+				allRooms.push(roomId);
+				AsyncStorage.setItem("rooms", JSON.stringify(allRooms));
+			});
+		});
+	}, []);
+
+	useEffect(() => {
+		socket.on("connect_error", (err) => {
+			console.log(err);
+		});
+		return () => {
+			socket.off("connect_error");
+		};
+	}, []);
+	useEffect(() => {
+		socket.auth = { _id: userDetails._id, receiverId: receiverId };
+		socket.connect();
+	}, [socket]);
 
 	const renderBubble = (props) => {
 		return (
@@ -39,7 +83,7 @@ const ChatScreen = ({ route }) => {
 				{...props}
 				textStyle={{
 					left: {
-						color: "white",
+						color: "#000",
 						fontWeight: "500",
 						paddingLeft: 8,
 						paddingRight: 8,
@@ -99,7 +143,9 @@ const ChatScreen = ({ route }) => {
 				}}
 			>
 				<TouchableOpacity
-					onPress={() => navigation.navigate("Chat")}
+					onPress={() => {
+						navigation.navigate("Home");
+					}}
 					style={{
 						padding: 5,
 						marginRight: 10,

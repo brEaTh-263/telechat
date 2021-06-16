@@ -2,17 +2,34 @@ import React from "react";
 import { SafeAreaView, View, Text, StyleSheet, FlatList } from "react-native";
 import Colors from "../constants/Colors";
 import { Feather } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
 import { users } from "../../raw_data";
-import { FAB } from "react-native-paper";
+import { FAB, Avatar } from "react-native-paper";
 import UserItem from "../components/UserItem";
 
 export default function HomeScreen({ navigation }) {
+	const userDetails = useSelector((state) => state.Auth);
+	console.log(userDetails);
 	return (
 		<SafeAreaView style={styles.container}>
 			<View style={styles.header}>
-				<Text style={{ color: "#fff", fontSize: 35, fontWeight: "bold" }}>
-					Chats
-				</Text>
+				<View style={{ flexDirection: "row", alignItems: "center" }}>
+					<Avatar.Text
+						size={40}
+						label={userDetails.name[0]}
+						labelStyle={{ textTransform: "capitalize" }}
+					/>
+					<Text
+						style={{
+							color: "#fff",
+							fontSize: 35,
+							fontWeight: "bold",
+							marginLeft: 10,
+						}}
+					>
+						Chats
+					</Text>
+				</View>
 				<Feather name="search" size={24} color={Colors.primary} />
 			</View>
 			<FAB

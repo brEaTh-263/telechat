@@ -11,7 +11,6 @@ const InitialScreen = () => {
 		const fetchData = async () => {
 			const token = await AsyncStorage.getItem("token");
 			if (token) {
-				console.log("true");
 				try {
 					await dispatch(authActions.autoLogIn(token));
 				} catch (error) {

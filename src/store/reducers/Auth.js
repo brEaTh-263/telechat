@@ -20,12 +20,15 @@ export default (state = initialState, action) => {
 		}
 		case SIGN_IN: {
 			AsyncStorage.setItem("token", action.payload.token);
+			AsyncStorage.setItem("rooms", JSON.stringify([]));
 			return {
 				...state,
 				isAuth: true,
 				didTryAutoLogin: true,
 				token: action.payload.token,
 				_id: action.payload._id,
+				name: action.payload.details.name,
+				displayPicture: action.payload.details.displayPicture,
 			};
 		}
 		default: {

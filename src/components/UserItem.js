@@ -9,7 +9,6 @@ export default function UserItem({
 	displayPicture,
 	msg,
 }) {
-	console.log(timestamp);
 	const getDateFormat = () => {
 		const d = moment(timestamp, "YYYYMMDD").fromNow();
 		return d;

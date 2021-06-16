@@ -1,8 +1,6 @@
 import io from "socket.io-client";
-const socket = io("http://localhost:3000");
-
-socket.on("connection", () => {
-	console.log("Connected to backend");
+const socket = io("http://localhost:3000", { autoConnect: false });
+socket.onAny((event, ...args) => {
+	console.log(event, args);
 });
-
 export default socket;
