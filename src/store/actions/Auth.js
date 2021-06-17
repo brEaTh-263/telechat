@@ -1,6 +1,7 @@
 import { url } from "../../constants/url";
 export const DID_TRY_AUTO_LOGIN = "DID_TRY_AUTO_LOGIN";
 export const SIGN_IN = "SIGN_IN";
+export const AUTO_LOGIN = "AUTO_LOGIN";
 
 export const setDidTryAutoLogin = () => {
 	return async (dispatch) => {
@@ -19,7 +20,6 @@ export const autoLogIn = (token) => {
 				},
 			});
 			const responseJson = await response.json();
-			// console.log(responseJson);
 			if (response.status != 200) {
 				throw new Error(responseJson.Error);
 			}

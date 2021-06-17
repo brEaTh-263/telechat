@@ -5,11 +5,13 @@ import { createStore, combineReducers, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
 import ReduxThunk from "redux-thunk";
 import AuthReducer from "./src/store/reducers/Auth";
+import ChatReducer from "./src/store/reducers/Chats";
 import AppNavigator from "./src/navigator/AppNavigator";
 import Colors from "./src/constants/Colors";
 
 const rootReducer = combineReducers({
 	Auth: AuthReducer,
+	Chats: ChatReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(ReduxThunk));

@@ -24,8 +24,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const ChatScreen = ({ route, navigation }) => {
 	const [messages, setMessages] = useState([]);
 	const userDetails = useSelector((state) => state.Auth);
+	const roomDetails = useSelector((state) => state.Chats.rooms);
 	const dispatch = useDispatch();
-	const { receiverName, receiverId, receiverDisplayPicture } = route.params;
+	const { receiverName, receiverId, receiverDisplayPicture, roomId } =
+		route.params;
+	console.log("Receiver Id" + receiverId);
 	const isFocused = useIsFocused();
 	const onSend = useCallback((messages = []) => {
 		console.log("Pushing some message");
@@ -33,14 +36,30 @@ const ChatScreen = ({ route, navigation }) => {
 			content: messages[messages.length - 1],
 			to: receiverId,
 		});
+		dispatch(
+			chatActions.pushMessage(socket.auth.roomId, messages[messages.length - 1])
+		);
 		setMessages((previousMessages) =>
 			GiftedChat.append(previousMessages, messages)
 		);
 	}, []);
 	useEffect(() => {
+		if (roomId) {
+			roomDetails.map((room) => {
+				if (room._id === roomId) {
+					setMessages((previousMessages) =>
+						GiftedChat.append(previousMessages, room.messages)
+					);
+				}
+			});
+		}
+	}, [roomId]);
+	useEffect(() => {
 		socket.on("private message", ({ content, from }) => {
 			console.log("Getting some message");
 			console.log(isFocused);
+			console.log(socket.auth.roomId);
+			dispatch(chatActions.pushMessage(socket.auth.roomId, content));
 			if (!isFocused) {
 				console.log("NOT FOCUSED");
 				console.log(content);
@@ -54,12 +73,19 @@ const ChatScreen = ({ route, navigation }) => {
 
 	useEffect(() => {
 		console.log("Getting room info");
-		socket.on("room", async ({ roomId }) => {
+		socket.on("room", async ({ roomId, existingRoom }) => {
+			if (!roomId) {
+				dispatch(chatActions.getRoomDetails(existingRoom));
+			}
 			socket.auth = { roomId };
 			AsyncStorage.getItem("rooms", (err, result) => {
 				const allRooms = JSON.parse(result);
-				allRooms.push(roomId);
-				AsyncStorage.setItem("rooms", JSON.stringify(allRooms));
+				const exists = allRooms.filter((room) => room._id === roomId);
+				if (!exists) {
+					console.log("Pushing room details into Async Storage");
+					allRooms.push({ _id: roomId, receiverName, receiverId });
+					AsyncStorage.setItem("rooms", JSON.stringify(allRooms));
+				}
 			});
 		});
 	}, []);
@@ -74,7 +100,10 @@ const ChatScreen = ({ route, navigation }) => {
 	}, []);
 	useEffect(() => {
 		socket.auth = { _id: userDetails._id, receiverId: receiverId };
-		socket.connect();
+		socket.emit("connect_me_to_room", {
+			_id: userDetails._id,
+			receiverId: receiverId,
+		});
 	}, [socket]);
 
 	const renderBubble = (props) => {
@@ -174,6 +203,7 @@ const ChatScreen = ({ route, navigation }) => {
 				onSend={(messages) => onSend(messages)}
 				user={{
 					_id: userDetails._id,
+					name: userDetails.name,
 				}}
 			/>
 		</SafeAreaView>

@@ -8,6 +8,7 @@ export default function UserItem({
 	name,
 	displayPicture,
 	msg,
+	receiverId,
 }) {
 	const getDateFormat = () => {
 		const d = moment(timestamp, "YYYYMMDD").fromNow();
@@ -18,8 +19,9 @@ export default function UserItem({
 		<TouchableOpacity
 			onPress={() =>
 				navigate.navigate("Chat", {
-					receiverId: _id,
+					receiverId: receiverId,
 					receiverName: name,
+					roomId: _id,
 					receiverDisplayPicture: displayPicture,
 				})
 			}

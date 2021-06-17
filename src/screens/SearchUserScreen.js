@@ -46,7 +46,7 @@ export default function SearchUserScreen({ navigation }) {
 				renderItem={({ item }) => {
 					return (
 						<UserItem
-							_id={item._id}
+							receiverId={item._id}
 							displayPicture={item.displayPicture}
 							name={item.name}
 						/>
