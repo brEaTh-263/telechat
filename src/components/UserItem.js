@@ -2,6 +2,8 @@ import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import moment from "moment";
 import { useNavigation } from "@react-navigation/native";
+import { Badge } from "react-native-paper";
+import Colors from "../constants/Colors";
 export default function UserItem({
 	_id,
 	timestamp,
@@ -9,6 +11,7 @@ export default function UserItem({
 	displayPicture,
 	msg,
 	receiverId,
+	count,
 }) {
 	const getDateFormat = () => {
 		const d = moment(timestamp, "YYYYMMDD").fromNow();
@@ -57,7 +60,15 @@ export default function UserItem({
 				>
 					{name}
 				</Text>
-				{msg && <Text style={{ color: "#fff" }}>{msg}</Text>}
+				{msg && (
+					<Text
+						style={{ color: "#fff", width: "70%" }}
+						ellipsizeMode="tail"
+						numberOfLines={1}
+					>
+						{msg}
+					</Text>
+				)}
 			</View>
 			{timestamp && (
 				<Text
@@ -71,6 +82,21 @@ export default function UserItem({
 				>
 					{getDateFormat()}
 				</Text>
+			)}
+			{count > 0 && (
+				<Badge
+					size={25}
+					style={{
+						opacity: 1,
+						position: "absolute",
+						right: 20,
+						top: 60,
+						backgroundColor: Colors.primary,
+						color: "#fff",
+					}}
+				>
+					{count}
+				</Badge>
 			)}
 		</TouchableOpacity>
 	);

@@ -6,7 +6,7 @@ import {
 	Send,
 } from "react-native-gifted-chat";
 import { useSelector, useDispatch } from "react-redux";
-import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import {
 	View,
 	SafeAreaView,
@@ -26,9 +26,9 @@ const ChatScreen = ({ route, navigation }) => {
 	const userDetails = useSelector((state) => state.Auth);
 	const roomDetails = useSelector((state) => state.Chats.rooms);
 	const dispatch = useDispatch();
+	const navigator = useNavigation();
 	const { receiverName, receiverId, receiverDisplayPicture, roomId } =
 		route.params;
-	console.log("Receiver Id" + receiverId);
 	const isFocused = useIsFocused();
 	const onSend = useCallback((messages = []) => {
 		console.log("Pushing some message");
@@ -43,39 +43,34 @@ const ChatScreen = ({ route, navigation }) => {
 			GiftedChat.append(previousMessages, messages)
 		);
 	}, []);
+
+	useEffect(() => {
+		socket.auth = { _id: userDetails._id, receiverId: receiverId };
+		socket.emit("connect_me_to_room", {
+			_id: userDetails._id,
+			receiverId: receiverId,
+		});
+	}, []);
+
 	useEffect(() => {
 		if (roomId) {
 			roomDetails.map((room) => {
 				if (room._id === roomId) {
+					let reversedMessages = room.messages.reverse();
 					setMessages((previousMessages) =>
-						GiftedChat.append(previousMessages, room.messages)
+						GiftedChat.append(previousMessages, reversedMessages)
 					);
 				}
 			});
+			dispatch(chatActions.resetNewMessages(roomId));
 		}
 	}, [roomId]);
-	useEffect(() => {
-		socket.on("private message", ({ content, from }) => {
-			console.log("Getting some message");
-			console.log(isFocused);
-			console.log(socket.auth.roomId);
-			dispatch(chatActions.pushMessage(socket.auth.roomId, content));
-			if (!isFocused) {
-				console.log("NOT FOCUSED");
-				console.log(content);
-				return;
-			}
-			setMessages((previousMessages) =>
-				GiftedChat.append(previousMessages, [content])
-			);
-		});
-	}, []);
-
 	useEffect(() => {
 		console.log("Getting room info");
 		socket.on("room", async ({ roomId, existingRoom }) => {
 			if (!roomId) {
 				dispatch(chatActions.getRoomDetails(existingRoom));
+				console.log("dispatched");
 			}
 			socket.auth = { roomId };
 			AsyncStorage.getItem("rooms", (err, result) => {
@@ -88,6 +83,27 @@ const ChatScreen = ({ route, navigation }) => {
 				}
 			});
 		});
+		return () => {
+			socket.off("room");
+		};
+	}, []);
+	useEffect(() => {
+		socket.once("private message", ({ content, from }) => {
+			console.log("Getting some message");
+			console.log(`I am ${userDetails.name}`);
+			// console.log(socket.auth.roomId);
+			dispatch(chatActions.pushMessage(socket.auth.roomId, content));
+
+			if (!navigator.isFocused()) {
+				console.log("NOT FOCUSED");
+				console.log(content);
+				dispatch(chatActions.showNewMessages(socket.auth.roomId, content));
+			} else {
+				setMessages((previousMessages) =>
+					GiftedChat.append(previousMessages, [content])
+				);
+			}
+		});
 	}, []);
 
 	useEffect(() => {
@@ -98,13 +114,6 @@ const ChatScreen = ({ route, navigation }) => {
 			socket.off("connect_error");
 		};
 	}, []);
-	useEffect(() => {
-		socket.auth = { _id: userDetails._id, receiverId: receiverId };
-		socket.emit("connect_me_to_room", {
-			_id: userDetails._id,
-			receiverId: receiverId,
-		});
-	}, [socket]);
 
 	const renderBubble = (props) => {
 		return (

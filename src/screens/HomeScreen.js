@@ -11,20 +11,17 @@ import * as chatActions from "../store/actions/Chats";
 export default function HomeScreen({ navigation }) {
 	const userDetails = useSelector((state) => state.Auth);
 	const rooms = useSelector((state) => state.Chats.rooms);
-	console.log(rooms);
+	// console.log(rooms);
 	const dispatch = useDispatch();
-	useEffect(() => {
-		socket.auth = { _id: userDetails._id };
-		socket.connect();
-	}, []);
 
 	useEffect(() => {
+		console.log("EMIT_MY_CHATS CALLED");
 		socket.emit("get_my_chats", { _id: userDetails._id });
 	}, []);
 
 	useEffect(() => {
+		console.log("Your room called");
 		socket.on("your_rooms", (rooms) => {
-			console.log("GOT MY ROOMSS");
 			dispatch(chatActions.getAllRooms(rooms));
 		});
 	}, []);
@@ -69,9 +66,12 @@ export default function HomeScreen({ navigation }) {
 						} else {
 							receiver = item.userIds[0];
 						}
+						let count = item?.count;
+
 						if (item.messages.length > 0)
 							return (
 								<UserItem
+									count={count}
 									msg={item.messages[item.messages.length - 1].text}
 									_id={item._id}
 									displayPicture={item.displayPicture}

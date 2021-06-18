@@ -1,5 +1,4 @@
 import React from "react";
-import "./src/socketIo";
 import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
 import { createStore, combineReducers, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
