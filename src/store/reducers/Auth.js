@@ -22,6 +22,7 @@ export default (state = initialState, action) => {
 			AsyncStorage.setItem("token", action.payload.token);
 			AsyncStorage.setItem("rooms", JSON.stringify([]));
 			AsyncStorage.setItem("_id", action.payload._id);
+			AsyncStorage.setItem("pushToken", "");
 			return {
 				...state,
 				isAuth: true,

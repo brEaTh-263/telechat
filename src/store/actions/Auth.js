@@ -46,6 +46,7 @@ export const signIn = (phoneNumber) => {
 			});
 			if (response.ok) {
 				const responseJson = await response.json();
+				console.log(responseJson);
 			} else {
 				throw new Error();
 			}
@@ -73,6 +74,31 @@ export const authenticatePhoneNumber = (name, code, phoneNumber) => {
 			if (response.ok) {
 				const responseJson = await response.json();
 				dispatch({ type: SIGN_IN, payload: responseJson });
+			} else {
+				throw new Error();
+			}
+		} catch (error) {
+			console.log(error);
+			throw new Error();
+		}
+	};
+};
+
+export const sendPushToken = (pushToken, token) => {
+	return async (dispatch) => {
+		try {
+			const response = await fetch(`${url}/auth/push-token`, {
+				method: "POST",
+				headers: {
+					"x-auth-token": token,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					pushToken,
+				}),
+			});
+			if (response.ok) {
+				const responseJson = await response.json();
 			} else {
 				throw new Error();
 			}

@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { SafeAreaView, Text, FlatList, TouchableOpacity } from "react-native";
+import {
+	SafeAreaView,
+	Text,
+	FlatList,
+	TouchableOpacity,
+	Platform,
+} from "react-native";
 import Colors from "../constants/Colors";
 import useSeachUsers from "../hooks/useSeachUsers";
 import { Searchbar } from "react-native-paper";
@@ -13,7 +19,13 @@ export default function SearchUserScreen({ navigation }) {
 		getUsers(query);
 	};
 	return (
-		<SafeAreaView style={{ backgroundColor: Colors.background, flex: 1 }}>
+		<SafeAreaView
+			style={{
+				backgroundColor: Colors.background,
+				flex: 1,
+				paddingTop: Platform.OS === "android" ? 25 : 0,
+			}}
+		>
 			<TouchableOpacity
 				onPress={() => navigation.goBack()}
 				style={{

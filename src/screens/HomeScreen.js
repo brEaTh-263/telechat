@@ -1,18 +1,42 @@
 import React, { useEffect } from "react";
-import { SafeAreaView, View, Text, StyleSheet, FlatList } from "react-native";
+import {
+	SafeAreaView,
+	View,
+	Text,
+	StyleSheet,
+	FlatList,
+	Platform,
+} from "react-native";
 import Colors from "../constants/Colors";
+import * as Notifications from "expo-notifications";
 import { Feather } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { FAB, Avatar } from "react-native-paper";
 import UserItem from "../components/UserItem";
 import socket from "../socketIo";
+import Constants from "expo-constants";
 import * as chatActions from "../store/actions/Chats";
+import * as authActions from "../store/actions/Auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HomeScreen({ navigation }) {
 	const userDetails = useSelector((state) => state.Auth);
 	const rooms = useSelector((state) => state.Chats.rooms);
 	// console.log(rooms);
 	const dispatch = useDispatch();
+
+	useEffect(() => {
+		const getPushToken = () => {
+			const tokenStatus = await AsyncStorage.getItem("pushToken");
+			if (tokenStatus !== "granted")
+				if (Constants.isDevice)
+					registerForPushNotificationsAsync().then((token) => {
+						AsyncStorage.setItem("pushToken", "granted");
+						dispatch(authActions.sendPushToken(token, userDetails.token));
+					});
+		};
+		getPushToken();
+	}, []);
 
 	useEffect(() => {
 		console.log("EMIT_MY_CHATS CALLED");
@@ -91,6 +115,7 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: Colors.background,
+		paddingTop: Platform.OS === "android" ? 25 : 0,
 	},
 	header: {
 		flexDirection: "row",
@@ -108,3 +133,36 @@ const styles = StyleSheet.create({
 		zIndex: 100,
 	},
 });
+
+async function registerForPushNotificationsAsync() {
+	let token;
+	if (Constants.isDevice) {
+		const { status: existingStatus } =
+			await Notifications.getPermissionsAsync();
+		let finalStatus = existingStatus;
+		if (existingStatus !== "granted") {
+			const { status } = await Notifications.requestPermissionsAsync();
+			finalStatus = status;
+		}
+		if (finalStatus !== "granted") {
+			AsyncStorage.setItem("pushToken", "revoked");
+			alert("Allow notifications to receive messages");
+			return;
+		}
+		token = (await Notifications.getExpoPushTokenAsync()).data;
+		console.log(token);
+	} else {
+		alert("Must use physical device for Push Notifications");
+	}
+
+	if (Platform.OS === "android") {
+		Notifications.setNotificationChannelAsync("default", {
+			name: "default",
+			importance: Notifications.AndroidImportance.MAX,
+			vibrationPattern: [0, 250, 250, 250],
+			lightColor: "#FF231F7C",
+		});
+	}
+
+	return token;
+}

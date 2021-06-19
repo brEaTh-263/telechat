@@ -14,7 +14,7 @@ export default function SignInScreen({ navigation }) {
 		<SafeAreaView style={styles.container}>
 			<Image
 				style={styles.image}
-				resizeMode="cover"
+				resizeMode="contain"
 				source={require("../../assets/hand-wave.png")}
 			/>
 			<Text style={styles.title}>Let's Have Chat Together</Text>
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	image: {
-		width: "70%",
+		width: "100%",
 		height: "50%",
 		alignSelf: "center",
 		marginTop: 45,

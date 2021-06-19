@@ -13,6 +13,7 @@ import {
 	Text,
 	StyleSheet,
 	TouchableOpacity,
+	Platform,
 } from "react-native";
 import * as chatActions from "../store/actions/Chats";
 import Colors from "../constants/Colors";
@@ -29,7 +30,6 @@ const ChatScreen = ({ route, navigation }) => {
 	const navigator = useNavigation();
 	const { receiverName, receiverId, receiverDisplayPicture, roomId } =
 		route.params;
-	const isFocused = useIsFocused();
 	const onSend = useCallback((messages = []) => {
 		console.log("Pushing some message");
 		socket.emit("private message", {
@@ -45,6 +45,7 @@ const ChatScreen = ({ route, navigation }) => {
 	}, []);
 
 	useEffect(() => {
+		console.log("trying to connect to room");
 		socket.auth = { _id: userDetails._id, receiverId: receiverId };
 		socket.emit("connect_me_to_room", {
 			_id: userDetails._id,
@@ -170,7 +171,13 @@ const ChatScreen = ({ route, navigation }) => {
 	};
 
 	return (
-		<SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+		<SafeAreaView
+			style={{
+				flex: 1,
+				backgroundColor: Colors.background,
+				paddingTop: Platform.OS === "android" ? 25 : 0,
+			}}
+		>
 			<View
 				style={{
 					flexDirection: "row",

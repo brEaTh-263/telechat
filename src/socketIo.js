@@ -1,8 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import io from "socket.io-client";
-const socket = io("http://localhost:3000", { autoConnect: false });
+import { url } from "./constants/url";
+const socket = io(`${url}`, { autoConnect: false });
 const x = async () => {
+	console.log("x called");
 	const _id = await AsyncStorage.getItem("_id");
+	console.log(_id);
 	socket.auth = { _id };
 	socket.connect();
 };
@@ -10,7 +13,7 @@ const x = async () => {
 x();
 
 socket.onAny((event, ...args) => {
-	// console.log(event, args);
+	console.log(event, args);
 });
 
 export default socket;
