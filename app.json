@@ -10,6 +10,9 @@
 			"resizeMode": "contain",
 			"backgroundColor": "#ef6168"
 		},
+		"notification": {
+			"icon": "./assets/icon.png"
+		},
 		"updates": {
 			"fallbackToCacheTimeout": 0
 		},
@@ -18,10 +21,12 @@
 			"supportsTablet": true
 		},
 		"android": {
+			"package": "com.breath263.telechat",
 			"adaptiveIcon": {
 				"foregroundImage": "./assets/adaptive-icon.png",
 				"backgroundColor": "#FFFFFF"
-			}
+			},
+			"googleServicesFile": "./google-services.json"
 		},
 		"web": {
 			"favicon": "./assets/favicon.png"

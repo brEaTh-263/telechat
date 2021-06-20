@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
 	SafeAreaView,
 	View,
@@ -19,14 +19,24 @@ import * as chatActions from "../store/actions/Chats";
 import * as authActions from "../store/actions/Auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+// Notifications.setNotificationHandler({
+// 	handleNotification: async () => ({
+// 		shouldShowAlert: true,
+// 		shouldPlaySound: false,
+// 		shouldSetBadge: false,
+// 	}),
+// });
+
 export default function HomeScreen({ navigation }) {
 	const userDetails = useSelector((state) => state.Auth);
 	const rooms = useSelector((state) => state.Chats.rooms);
 	// console.log(rooms);
 	const dispatch = useDispatch();
+	const responseListener = useRef();
+	const notificationListener = useRef();
 
 	useEffect(() => {
-		const getPushToken = () => {
+		const getPushToken = async () => {
 			const tokenStatus = await AsyncStorage.getItem("pushToken");
 			if (tokenStatus !== "granted")
 				if (Constants.isDevice)
@@ -36,6 +46,36 @@ export default function HomeScreen({ navigation }) {
 					});
 		};
 		getPushToken();
+	}, []);
+
+	useEffect(() => {
+		notificationListener.current =
+			Notifications.addNotificationReceivedListener((notification) => {
+				// console.log(notification);
+				dispatch(
+					chatActions.pushMessage(
+						notification.request.content.data.roomId,
+						notification.request.content.data.content
+					)
+				);
+			});
+
+		responseListener.current =
+			Notifications.addNotificationResponseReceivedListener((response) => {
+				dispatch(
+					chatActions.pushMessage(
+						response.request.content.data.roomId,
+						response.request.content.data.content
+					)
+				);
+			});
+
+		return () => {
+			Notifications.removeNotificationSubscription(
+				notificationListener.current
+			);
+			Notifications.removeNotificationSubscription(responseListener.current);
+		};
 	}, []);
 
 	useEffect(() => {
