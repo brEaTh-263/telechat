@@ -31,7 +31,7 @@ const ChatScreen = ({ route, navigation }) => {
 	const { receiverName, receiverId, receiverDisplayPicture, roomId } =
 		route.params;
 	const onSend = useCallback((messages = []) => {
-		console.log("Pushing some message");
+		// console.log("Pushing some message");
 		socket.emit("private message", {
 			content: messages[messages.length - 1],
 			to: receiverId,
@@ -45,7 +45,7 @@ const ChatScreen = ({ route, navigation }) => {
 	}, []);
 
 	useEffect(() => {
-		console.log("trying to connect to room");
+		// console.log("trying to connect to room");
 		socket.auth = { _id: userDetails._id, receiverId: receiverId };
 		socket.emit("connect_me_to_room", {
 			_id: userDetails._id,
@@ -67,32 +67,32 @@ const ChatScreen = ({ route, navigation }) => {
 		}
 	}, [roomId]);
 	useEffect(() => {
-		console.log("Getting room info");
-		socket.on("room", async ({ roomId, existingRoom }) => {
+		// console.log("Getting room info");
+		socket.on("room", async ({ newRoomId, existingRoom }) => {
 			if (!roomId) {
+				// console.log("DISPATCHING NEW USER SYNDROME");
 				dispatch(chatActions.getRoomDetails(existingRoom));
-				console.log("dispatched");
 			}
-			socket.auth = { roomId };
-			AsyncStorage.getItem("rooms", (err, result) => {
-				const allRooms = JSON.parse(result);
-				const exists = allRooms.filter((room) => room._id === roomId);
-				if (!exists) {
-					console.log("Pushing room details into Async Storage");
-					allRooms.push({ _id: roomId, receiverName, receiverId });
-					AsyncStorage.setItem("rooms", JSON.stringify(allRooms));
-				}
-			});
+			socket.auth = { roomId: newRoomId };
+			// AsyncStorage.getItem("rooms", (err, result) => {
+			// 	const allRooms = JSON.parse(result);
+			// 	const exists = allRooms.filter((room) => room._id === roomId);
+			// 	if (!exists) {
+			// 		console.log("Pushing room details into Async Storage");
+			// 		allRooms.push({ _id: roomId, receiverName, receiverId });
+			// 		AsyncStorage.setItem("rooms", JSON.stringify(allRooms));
+			// 	}
+			// });
 		});
 		return () => {
 			socket.off("room");
 		};
 	}, []);
 	useEffect(() => {
-		console.log("Getting some message");
+		// console.log("Getting some message");
 
 		socket.off("private message").on("private message", ({ content, from }) => {
-			console.log(`I am ${userDetails.name}`);
+			// console.log(`I am ${userDetails.name}`);
 			// console.log(socket.auth.roomId);
 			dispatch(chatActions.pushMessage(socket.auth.roomId, content));
 
@@ -115,6 +115,10 @@ const ChatScreen = ({ route, navigation }) => {
 		return () => {
 			socket.off("connect_error");
 		};
+	}, []);
+
+	const disconnectMe = useCallback(() => {
+		socket.emit("disconnectRoom", { roomId });
 	}, []);
 
 	const renderBubble = (props) => {
@@ -190,6 +194,7 @@ const ChatScreen = ({ route, navigation }) => {
 			>
 				<TouchableOpacity
 					onPress={() => {
+						disconnectMe();
 						navigation.navigate("Home");
 					}}
 					style={{

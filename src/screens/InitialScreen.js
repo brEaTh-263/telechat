@@ -10,6 +10,7 @@ const InitialScreen = () => {
 	useEffect(() => {
 		const fetchData = async () => {
 			const token = await AsyncStorage.getItem("token");
+			console.log(token);
 			if (token) {
 				try {
 					await dispatch(authActions.autoLogIn(token));

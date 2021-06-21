@@ -8,6 +8,7 @@ const initialState = {
 	_id: "",
 	name: "",
 	displayPicture: "",
+	phoneNumber: "",
 };
 
 export default (state = initialState, action) => {
@@ -31,6 +32,7 @@ export default (state = initialState, action) => {
 				_id: action.payload._id,
 				name: action.payload.details.name,
 				displayPicture: action.payload.details.displayPicture,
+				phoneNumber: action.payload.details.phoneNumber,
 			};
 		}
 		default: {

@@ -1,9 +1,17 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import {
+	View,
+	Text,
+	Image,
+	StyleSheet,
+	TouchableOpacity,
+	Dimensions,
+} from "react-native";
 import moment from "moment";
 import { useNavigation } from "@react-navigation/native";
-import { Badge } from "react-native-paper";
+import { Badge, Avatar } from "react-native-paper";
 import Colors from "../constants/Colors";
+const MAX_WIDTH = Dimensions.get("window").width;
 export default function UserItem({
 	_id,
 	timestamp,
@@ -36,16 +44,9 @@ export default function UserItem({
 				alignItems: "center",
 			}}
 		>
-			<Image
-				style={{
-					width: 50,
-					height: 50,
-					borderRadius: 15,
-					overflow: "hidden",
-					backgroundColor: "#888",
-					marginRight: 20,
-				}}
-				resizeMode="contain"
+			<Avatar.Image
+				size={60}
+				style={{ marginRight: 10 }}
 				source={require("../../assets/otp.png")}
 			/>
 			<View>
@@ -62,7 +63,7 @@ export default function UserItem({
 				</Text>
 				{msg && (
 					<Text
-						style={{ color: "#fff", width: "70%" }}
+						style={{ color: "#fff", width: MAX_WIDTH - 150 }}
 						ellipsizeMode="tail"
 						numberOfLines={1}
 					>

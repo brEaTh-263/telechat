@@ -6,6 +6,7 @@ import {
 	StyleSheet,
 	Image,
 	TouchableOpacity,
+	Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import OTPInputView from "@twotalltotems/react-native-otp-input";
@@ -65,9 +66,13 @@ export default function OtpScreen({ navigation, route }) {
 			>
 				<Ionicons name="arrow-back" size={24} color={Colors.primary} />
 			</TouchableOpacity>
-			<View style={{ height: "10%" }} />
+			<View style={{ maxHeight: "10%", height: 100 }} />
 			<Image
-				style={{ width: 150, height: 150, marginVertical: 15 }}
+				style={{
+					width: 150,
+					height: "15%",
+					marginVertical: 15,
+				}}
 				resizeMode="contain"
 				source={require("../../assets/otp.png")}
 			/>
@@ -89,10 +94,11 @@ export default function OtpScreen({ navigation, route }) {
 					textAlign: "center",
 					fontSize: 18,
 					letterSpacing: 1,
+					fontWeight: "200",
 				}}
 			>
-				Enter the verification code send to the number{" "}
-				<Text style={{ fontWeight: "bold" }}> (+91){phoneNumber}</Text>
+				Enter the verification code sent to the number{" "}
+				<Text>(+91){phoneNumber}</Text>
 			</Text>
 
 			<OTPInputView
@@ -181,6 +187,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: Colors.background,
 		alignItems: "center",
+		paddingTop: Platform.OS === "android" ? 25 : 0,
 	},
 	borderStyleBase: {
 		width: 30,
@@ -192,11 +199,12 @@ const styles = StyleSheet.create({
 	},
 
 	underlineStyleBase: {
-		width: 55,
+		width: 45,
 		height: 45,
 		borderWidth: 0,
 		fontSize: 24,
 		borderBottomWidth: 1,
+		padding: 10,
 	},
 
 	underlineStyleHighLighted: {

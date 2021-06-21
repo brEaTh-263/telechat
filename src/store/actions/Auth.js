@@ -20,6 +20,7 @@ export const autoLogIn = (token) => {
 				},
 			});
 			const responseJson = await response.json();
+			console.log(responseJson);
 			if (response.status != 200) {
 				throw new Error(responseJson.Error);
 			}
@@ -46,7 +47,6 @@ export const signIn = (phoneNumber) => {
 			});
 			if (response.ok) {
 				const responseJson = await response.json();
-				console.log(responseJson);
 			} else {
 				throw new Error();
 			}

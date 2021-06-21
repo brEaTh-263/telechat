@@ -6,6 +6,8 @@ import {
 	StyleSheet,
 	FlatList,
 	Platform,
+	Dimensions,
+	TouchableWithoutFeedback,
 } from "react-native";
 import Colors from "../constants/Colors";
 import * as Notifications from "expo-notifications";
@@ -19,17 +21,12 @@ import * as chatActions from "../store/actions/Chats";
 import * as authActions from "../store/actions/Auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Notifications.setNotificationHandler({
-// 	handleNotification: async () => ({
-// 		shouldShowAlert: true,
-// 		shouldPlaySound: false,
-// 		shouldSetBadge: false,
-// 	}),
-// });
+const MAX_HEIGHT = Dimensions.get("window").height;
 
 export default function HomeScreen({ navigation }) {
 	const userDetails = useSelector((state) => state.Auth);
 	const rooms = useSelector((state) => state.Chats.rooms);
+	// console.log("MY ROOMS");
 	// console.log(rooms);
 	const dispatch = useDispatch();
 	const responseListener = useRef();
@@ -49,26 +46,86 @@ export default function HomeScreen({ navigation }) {
 	}, []);
 
 	useEffect(() => {
+		socket.emit("get_my_chats", { _id: userDetails._id });
+	}, []);
+
+	useEffect(() => {
+		socket.on("your_rooms", (rooms) => {
+			dispatch(chatActions.getAllRooms(rooms));
+		});
+	}, []);
+
+	useEffect(() => {
+		// console.warn(rooms.length);
 		notificationListener.current =
-			Notifications.addNotificationReceivedListener((notification) => {
-				// console.log(notification);
-				dispatch(
-					chatActions.pushMessage(
-						notification.request.content.data.roomId,
-						notification.request.content.data.content
-					)
+			Notifications.addNotificationReceivedListener(async (notification) => {
+				const { roomId, content, room } = notification.request.content.data;
+				console.log(roomId);
+				console.log(content);
+				console.log(room);
+				// dispatch(chatActions.getRoomDetails(room));
+				console.log(rooms);
+				const existingRoom = await Promise.all(
+					rooms.filter((room) => {
+						console.log("INSIDE");
+						console.log(room._id);
+						console.log(notification.request.content.data.roomId);
+						return (
+							String(room._id) ===
+							String(notification.request.content.data.roomId)
+						);
+					})
 				);
+				// console.log(notification.request.content);
+
+				console.log("EXISTING ROOM");
+				console.log(existingRoom);
+				if (existingRoom.length > 0) {
+					console.log("DISPATCHING PUSH MESSAGE");
+					dispatch(chatActions.pushMessage(roomId, content));
+					dispatch(chatActions.showNewMessages(roomId, content));
+				} else {
+					console.log("DISPATCHING ROOM MESSAGE");
+					socket.emit("get_my_chats", { _id: userDetails._id });
+				}
 			});
 
 		responseListener.current =
-			Notifications.addNotificationResponseReceivedListener((response) => {
-				dispatch(
-					chatActions.pushMessage(
-						response.request.content.data.roomId,
-						response.request.content.data.content
-					)
-				);
-			});
+			Notifications.addNotificationResponseReceivedListener(
+				async (response) => {
+					const { roomId, content, room } = response.request.content.data;
+					console.log(roomId);
+					console.log(content);
+					console.log(room);
+					// dispatch(chatActions.getRoomDetails(room));
+					console.log(rooms);
+					const existingRoom = await Promise.all(
+						rooms.filter((room) => {
+							console.log("INSIDE");
+							console.log(room._id);
+							console.log(response.request.content.data.roomId);
+							return (
+								String(room._id) ===
+								String(response.request.content.data.roomId)
+							);
+						})
+					);
+					// console.log(response.request.content);
+
+					console.log("EXISTING ROOM");
+					console.log(existingRoom);
+					if (existingRoom.length > 0) {
+						console.log("DISPATCHING PUSH MESSAGE");
+						dispatch(chatActions.pushMessage(roomId, content));
+						dispatch(chatActions.showNewMessages(roomId, content));
+					} else {
+						console.log("DISPATCHING ROOM MESSAGE");
+						dispatch(chatActions.getRoomDetails(room));
+						dispatch(chatActions.showNewMessages(roomId, content));
+						// socket.emit("get_my_chats", { _id: userDetails._id });
+					}
+				}
+			);
 
 		return () => {
 			Notifications.removeNotificationSubscription(
@@ -76,39 +133,22 @@ export default function HomeScreen({ navigation }) {
 			);
 			Notifications.removeNotificationSubscription(responseListener.current);
 		};
-	}, []);
-
-	useEffect(() => {
-		console.log("EMIT_MY_CHATS CALLED");
-		socket.emit("get_my_chats", { _id: userDetails._id });
-	}, []);
-
-	useEffect(() => {
-		console.log("Your room called");
-		socket.on("your_rooms", (rooms) => {
-			dispatch(chatActions.getAllRooms(rooms));
-		});
-	}, []);
+	}, [rooms]);
 
 	return (
 		<SafeAreaView style={styles.container}>
 			<View style={styles.header}>
 				<View style={{ flexDirection: "row", alignItems: "center" }}>
-					<Avatar.Text
-						size={40}
-						label={userDetails.name[0]}
-						labelStyle={{ textTransform: "capitalize" }}
-					/>
-					<Text
-						style={{
-							color: "#fff",
-							fontSize: 35,
-							fontWeight: "bold",
-							marginLeft: 10,
-						}}
+					<TouchableWithoutFeedback
+						onPress={() => navigation.navigate("Settings")}
 					>
-						Chats
-					</Text>
+						<Avatar.Text
+							size={30}
+							label={userDetails.name[0]}
+							labelStyle={{ textTransform: "capitalize" }}
+						/>
+					</TouchableWithoutFeedback>
+					<Text style={styles.title}>Chats</Text>
 				</View>
 				<Feather name="search" size={24} color={Colors.primary} />
 			</View>
@@ -117,6 +157,29 @@ export default function HomeScreen({ navigation }) {
 				icon="chat-plus-outline"
 				onPress={() => navigation.navigate("SearchUsers")}
 			/>
+			{rooms.length === 0 && (
+				<View
+					style={{
+						alignItems: "center",
+						height: MAX_HEIGHT - 80,
+
+						justifyContent: "center",
+					}}
+				>
+					<Text
+						style={{
+							color: "#fff",
+							width: "70%",
+							textAlign: "center",
+							fontSize: 20,
+							fontWeight: "200",
+							letterSpacing: 1,
+						}}
+					>
+						Your ongoing chats will be visible here
+					</Text>
+				</View>
+			)}
 			{rooms.length > 0 && (
 				<FlatList
 					numColumns={1}
@@ -124,6 +187,7 @@ export default function HomeScreen({ navigation }) {
 					data={rooms}
 					keyExtractor={(item) => item._id}
 					renderItem={({ item }) => {
+						// console.log(item);
 						let receiver;
 						if (userDetails._id === item.userIds[0]._id) {
 							receiver = item.userIds[1];
@@ -131,7 +195,9 @@ export default function HomeScreen({ navigation }) {
 							receiver = item.userIds[0];
 						}
 						let count = item?.count;
-
+						// console.log("RECEIVER");
+						// console.log(receiver);
+						// console.log("RECEIVER");
 						if (item.messages.length > 0)
 							return (
 								<UserItem
@@ -140,7 +206,7 @@ export default function HomeScreen({ navigation }) {
 									_id={item._id}
 									displayPicture={item.displayPicture}
 									name={receiver.name}
-									receiverId={receiver._id.toString()}
+									receiverId={receiver._id}
 									timestamp={item.messages[item.messages.length - 1].createdAt}
 								/>
 							);
@@ -159,10 +225,17 @@ const styles = StyleSheet.create({
 	},
 	header: {
 		flexDirection: "row",
+		height: 50,
 		justifyContent: "space-between",
 		marginHorizontal: 25,
 		marginVertical: 15,
 		alignItems: "center",
+	},
+	title: {
+		color: "#fff",
+		fontSize: 35,
+		fontWeight: "bold",
+		marginLeft: 10,
 	},
 	fab: {
 		backgroundColor: Colors.primary,
