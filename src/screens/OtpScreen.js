@@ -56,47 +56,18 @@ export default function OtpScreen({ navigation, route }) {
 		<SafeAreaView style={styles.container}>
 			<TouchableOpacity
 				onPress={() => navigation.goBack()}
-				style={{
-					backgroundColor: "#000",
-					borderRadius: 50,
-					padding: 10,
-					alignSelf: "flex-start",
-					marginLeft: 10,
-				}}
+				style={styles.backbutton}
 			>
 				<Ionicons name="arrow-back" size={24} color={Colors.primary} />
 			</TouchableOpacity>
 			<View style={{ maxHeight: "10%", height: 100 }} />
 			<Image
-				style={{
-					width: 150,
-					height: "15%",
-					marginVertical: 15,
-				}}
+				style={styles.imageStyle}
 				resizeMode="contain"
 				source={require("../../assets/otp.png")}
 			/>
-			<Text
-				style={{
-					color: "#fff",
-					fontSize: 30,
-					fontWeight: "bold",
-					marginVertical: 15,
-					letterSpacing: 1,
-				}}
-			>
-				Verification Code
-			</Text>
-			<Text
-				style={{
-					color: "#fff",
-					width: "60%",
-					textAlign: "center",
-					fontSize: 18,
-					letterSpacing: 1,
-					fontWeight: "200",
-				}}
-			>
+			<Text style={styles.title}>Verification Code</Text>
+			<Text style={styles.subtitle}>
 				Enter the verification code sent to the number{" "}
 				<Text>(+91){phoneNumber}</Text>
 			</Text>
@@ -126,34 +97,12 @@ export default function OtpScreen({ navigation, route }) {
 			</Button>
 			{canSendOtp && (
 				<TouchableOpacity onPress={resendOtp}>
-					<Text
-						style={{
-							marginTop: 12,
-							color: "#fff",
-
-							textAlign: "center",
-							fontSize: 18,
-							letterSpacing: 1,
-						}}
-					>
-						Resend OTP
-					</Text>
+					<Text style={styles.resendOtpButton}>Resend OTP</Text>
 				</TouchableOpacity>
 			)}
 			{!canSendOtp && (
 				<View style={{ flexDirection: "row", justifyContent: "center" }}>
-					<Text
-						style={{
-							marginTop: 12,
-							color: "#fff",
-							// width: "60%",
-							textAlign: "center",
-							fontSize: 18,
-							letterSpacing: 1,
-						}}
-					>
-						Resend OTP in {"  "}
-					</Text>
+					<Text style={styles.resendOtpTime}>Resend OTP in {"  "}</Text>
 
 					<CountDown
 						until={30}
@@ -165,17 +114,7 @@ export default function OtpScreen({ navigation, route }) {
 						timeToShow={["S"]}
 						timeLabels={{ s: "SS" }}
 					/>
-					<Text
-						style={{
-							marginTop: 12,
-							color: "#fff",
-							textAlign: "center",
-							fontSize: 18,
-							letterSpacing: 1,
-						}}
-					>
-						seconds
-					</Text>
+					<Text style={styles.resendOtpTime}>seconds</Text>
 				</View>
 			)}
 		</SafeAreaView>
@@ -197,7 +136,49 @@ const styles = StyleSheet.create({
 	borderStyleHighLighted: {
 		borderColor: "#03DAC6",
 	},
+	backbutton: {
+		backgroundColor: "#000",
+		borderRadius: 50,
+		padding: 10,
+		alignSelf: "flex-start",
+		marginLeft: 10,
+	},
+	imageStyle: {
+		width: 150,
+		height: "15%",
+		marginVertical: 15,
+	},
+	title: {
+		color: "#fff",
+		fontSize: 30,
+		fontWeight: "bold",
+		marginVertical: 15,
+		letterSpacing: 1,
+	},
+	subtitle: {
+		color: "#fff",
+		width: "60%",
+		textAlign: "center",
+		fontSize: 18,
+		letterSpacing: 1,
+		fontWeight: "200",
+	},
+	resendOtpButton: {
+		marginTop: 12,
+		color: "#fff",
 
+		textAlign: "center",
+		fontSize: 18,
+		letterSpacing: 1,
+	},
+	resendOtpTime: {
+		marginTop: 12,
+		color: "#fff",
+
+		textAlign: "center",
+		fontSize: 18,
+		letterSpacing: 1,
+	},
 	underlineStyleBase: {
 		width: 45,
 		height: 45,

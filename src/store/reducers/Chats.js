@@ -5,7 +5,6 @@ import {
 	RESET_NEW_MESSAGES,
 	SHOW_NEW_MESSAGES,
 } from "../actions/Chats";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const initialState = {
 	rooms: [],
@@ -14,13 +13,6 @@ const initialState = {
 export default (state = initialState, action) => {
 	switch (action.type) {
 		case GET_ALL_ROOMS: {
-			// let descMsgRooms = action.payload.map((room) => {
-			// 	let descMessages = room.messages.reverse();
-			// 	return {
-			// 		...room,
-			// 		messages: descMessages,
-			// 	};
-			// });
 			return {
 				rooms: action.payload,
 			};
@@ -47,15 +39,11 @@ export default (state = initialState, action) => {
 			const roomId = action.payload.roomId;
 			const editedRooms = state.rooms.map((room) => {
 				if (room._id === roomId) {
-					// console.log("INITIAL ROOM COUNT");
-					// console.log(room.count);
 					if (room.count > 0) {
 						room.count += 1;
 					} else {
 						room.count = 1;
 					}
-					// console.log("FINAL ROOM COUNT");
-					// console.log(room.count);
 				}
 				return room;
 			});
@@ -67,13 +55,9 @@ export default (state = initialState, action) => {
 			const roomId = action.payload.roomId;
 			const editedRooms = state.rooms.map((room) => {
 				if (room._id === roomId) {
-					// console.log("INITIAL ROOM COUNT");
-					// console.log(room.count);
 					if (room.count) {
 						room.count = 0;
 					}
-					// console.log("FINAL ROOM COUNT");
-					// console.log(room.count);
 				}
 				return room;
 			});

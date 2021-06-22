@@ -47,13 +47,7 @@ export default function UserItem({
 					receiverDisplayPicture: displayPicture,
 				})
 			}
-			style={{
-				flexDirection: "row",
-				borderBottomWidth: StyleSheet.hairlineWidth,
-				borderColor: "#888",
-				padding: 25,
-				alignItems: "center",
-			}}
+			style={styles.container}
 		>
 			<>
 				<TouchableWithoutFeedback onPress={() => refRBSheet.current.open()}>
@@ -68,17 +62,7 @@ export default function UserItem({
 					/>
 				</TouchableWithoutFeedback>
 				<View>
-					<Text
-						style={{
-							color: "#fff",
-							fontSize: 20,
-							fontWeight: "bold",
-							marginBottom: 5,
-							textTransform: "capitalize",
-						}}
-					>
-						{name}
-					</Text>
+					<Text style={styles.name}>{name}</Text>
 					{msg && (
 						<Text
 							style={{ color: "#fff", width: MAX_WIDTH - 150 }}
@@ -89,31 +73,9 @@ export default function UserItem({
 						</Text>
 					)}
 				</View>
-				{timestamp && (
-					<Text
-						style={{
-							color: "#fff",
-							opacity: 0.8,
-							position: "absolute",
-							right: 10,
-							top: 30,
-						}}
-					>
-						{getDateFormat()}
-					</Text>
-				)}
+				{timestamp && <Text style={styles.timestamp}>{getDateFormat()}</Text>}
 				{count > 0 && (
-					<Badge
-						size={25}
-						style={{
-							opacity: 1,
-							position: "absolute",
-							right: 20,
-							top: 60,
-							backgroundColor: Colors.primary,
-							color: "#fff",
-						}}
-					>
+					<Badge size={25} style={styles.badge}>
 						{count}
 					</Badge>
 				)}
@@ -144,27 +106,10 @@ export default function UserItem({
 									: `https://i.pravatar.cc/${seed}`,
 							}}
 						/>
-						<Text
-							style={{
-								color: "#fff",
-								fontSize: 20,
-								fontWeight: "400",
-								marginBottom: 5,
-								textTransform: "capitalize",
-							}}
-						>
-							{name}
-						</Text>
+						<Text style={styles.name}>{name}</Text>
 						<Text style={{ color: "#fff" }}>(+91) {phoneNumber}</Text>
 
-						<View
-							style={{
-								flexDirection: "row",
-								justifyContent: "space-around",
-								width: "70%",
-								marginVertical: 10,
-							}}
-						>
+						<View style={styles.iconsContainer}>
 							<Ionicons
 								name="chatbubble"
 								style={styles.iconStyle}
@@ -196,10 +141,45 @@ export default function UserItem({
 }
 
 const styles = StyleSheet.create({
+	container: {
+		flexDirection: "row",
+		borderBottomWidth: StyleSheet.hairlineWidth,
+		borderColor: "#888",
+		padding: 25,
+		alignItems: "center",
+	},
+	badge: {
+		opacity: 1,
+		position: "absolute",
+		right: 20,
+		top: 60,
+		backgroundColor: Colors.primary,
+		color: "#fff",
+	},
 	iconStyle: {
 		backgroundColor: "#323131",
 		padding: 8,
 		overflow: "hidden",
 		borderRadius: 20,
+	},
+	name: {
+		color: "#fff",
+		fontSize: 20,
+		fontWeight: "400",
+		marginBottom: 5,
+		textTransform: "capitalize",
+	},
+	iconsContainer: {
+		flexDirection: "row",
+		justifyContent: "space-around",
+		width: "70%",
+		marginVertical: 10,
+	},
+	timestamp: {
+		color: "#fff",
+		opacity: 0.8,
+		position: "absolute",
+		right: 10,
+		top: 30,
 	},
 });
