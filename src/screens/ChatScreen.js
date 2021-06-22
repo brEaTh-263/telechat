@@ -31,7 +31,6 @@ const ChatScreen = ({ route, navigation }) => {
 	const { receiverName, receiverId, receiverDisplayPicture, roomId } =
 		route.params;
 	const onSend = useCallback((messages = []) => {
-		// console.log("Pushing some message");
 		socket.emit("private message", {
 			content: messages[messages.length - 1],
 			to: receiverId,
@@ -45,7 +44,6 @@ const ChatScreen = ({ route, navigation }) => {
 	}, []);
 
 	useEffect(() => {
-		// console.log("trying to connect to room");
 		socket.auth = { _id: userDetails._id, receiverId: receiverId };
 		socket.emit("connect_me_to_room", {
 			_id: userDetails._id,
@@ -57,7 +55,11 @@ const ChatScreen = ({ route, navigation }) => {
 		if (roomId) {
 			roomDetails.map((room) => {
 				if (room._id === roomId) {
-					let reversedMessages = room.messages.reverse();
+					console.log(room.messages);
+					let reversedMessages = room.messages;
+					console.log("INITIALLY");
+					console.log("FINALLY");
+					console.log(reversedMessages);
 					setMessages((previousMessages) =>
 						GiftedChat.append(previousMessages, reversedMessages)
 					);
@@ -67,22 +69,11 @@ const ChatScreen = ({ route, navigation }) => {
 		}
 	}, [roomId]);
 	useEffect(() => {
-		// console.log("Getting room info");
 		socket.on("room", async ({ newRoomId, existingRoom }) => {
 			if (!roomId) {
-				// console.log("DISPATCHING NEW USER SYNDROME");
 				dispatch(chatActions.getRoomDetails(existingRoom));
 			}
 			socket.auth = { roomId: newRoomId };
-			// AsyncStorage.getItem("rooms", (err, result) => {
-			// 	const allRooms = JSON.parse(result);
-			// 	const exists = allRooms.filter((room) => room._id === roomId);
-			// 	if (!exists) {
-			// 		console.log("Pushing room details into Async Storage");
-			// 		allRooms.push({ _id: roomId, receiverName, receiverId });
-			// 		AsyncStorage.setItem("rooms", JSON.stringify(allRooms));
-			// 	}
-			// });
 		});
 		return () => {
 			socket.off("room");

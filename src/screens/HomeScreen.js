@@ -26,8 +26,8 @@ const MAX_HEIGHT = Dimensions.get("window").height;
 export default function HomeScreen({ navigation }) {
 	const userDetails = useSelector((state) => state.Auth);
 	const rooms = useSelector((state) => state.Chats.rooms);
-	// console.log("MY ROOMS");
-	// console.log(rooms);
+
+	console.log(rooms);
 	const dispatch = useDispatch();
 	const responseListener = useRef();
 	const notificationListener = useRef();
@@ -56,14 +56,12 @@ export default function HomeScreen({ navigation }) {
 	}, []);
 
 	useEffect(() => {
-		// console.warn(rooms.length);
 		notificationListener.current =
 			Notifications.addNotificationReceivedListener(async (notification) => {
 				const { roomId, content, room } = notification.request.content.data;
 				console.log(roomId);
 				console.log(content);
 				console.log(room);
-				// dispatch(chatActions.getRoomDetails(room));
 				console.log(rooms);
 				const existingRoom = await Promise.all(
 					rooms.filter((room) => {
@@ -78,8 +76,6 @@ export default function HomeScreen({ navigation }) {
 				);
 				// console.log(notification.request.content);
 
-				console.log("EXISTING ROOM");
-				console.log(existingRoom);
 				if (existingRoom.length > 0) {
 					console.log("DISPATCHING PUSH MESSAGE");
 					dispatch(chatActions.pushMessage(roomId, content));
@@ -122,7 +118,6 @@ export default function HomeScreen({ navigation }) {
 						console.log("DISPATCHING ROOM MESSAGE");
 						dispatch(chatActions.getRoomDetails(room));
 						dispatch(chatActions.showNewMessages(roomId, content));
-						// socket.emit("get_my_chats", { _id: userDetails._id });
 					}
 				}
 			);
@@ -142,11 +137,18 @@ export default function HomeScreen({ navigation }) {
 					<TouchableWithoutFeedback
 						onPress={() => navigation.navigate("Settings")}
 					>
-						<Avatar.Text
-							size={30}
-							label={userDetails.name[0]}
-							labelStyle={{ textTransform: "capitalize" }}
-						/>
+						{userDetails.displayPicture ? (
+							<Avatar.Image
+								source={{ uri: userDetails.displayPicture }}
+								size={30}
+							/>
+						) : (
+							<Avatar.Text
+								size={30}
+								label={userDetails.name[0]}
+								labelStyle={{ textTransform: "capitalize" }}
+							/>
+						)}
 					</TouchableWithoutFeedback>
 					<Text style={styles.title}>Chats</Text>
 				</View>
@@ -187,7 +189,6 @@ export default function HomeScreen({ navigation }) {
 					data={rooms}
 					keyExtractor={(item) => item._id}
 					renderItem={({ item }) => {
-						// console.log(item);
 						let receiver;
 						if (userDetails._id === item.userIds[0]._id) {
 							receiver = item.userIds[1];
@@ -195,19 +196,17 @@ export default function HomeScreen({ navigation }) {
 							receiver = item.userIds[0];
 						}
 						let count = item?.count;
-						// console.log("RECEIVER");
-						// console.log(receiver);
-						// console.log("RECEIVER");
 						if (item.messages.length > 0)
 							return (
 								<UserItem
 									count={count}
-									msg={item.messages[item.messages.length - 1].text}
+									msg={item.messages[0].text}
 									_id={item._id}
 									displayPicture={receiver.displayPicture}
 									name={receiver.name}
 									receiverId={receiver._id}
-									timestamp={item.messages[item.messages.length - 1].createdAt}
+									phoneNumber={receiver.phoneNumber}
+									timestamp={item.messages[0].createdAt}
 								/>
 							);
 					}}

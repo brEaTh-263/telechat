@@ -22,7 +22,7 @@ export default function ProfileScreen({ navigation }) {
 	const userDetails = useSelector((state) => state.Auth);
 	const refRBSheet = useRef();
 	const dispatch = useDispatch();
-	const [image, setImage] = useState("");
+
 	const [isLoading, setIsLoading] = useState(false);
 
 	const clickImage = async () => {
@@ -42,7 +42,6 @@ export default function ProfileScreen({ navigation }) {
 
 		if (!result.cancelled) {
 			onSave(result);
-			setImage(result.uri);
 		}
 	};
 
@@ -66,7 +65,6 @@ export default function ProfileScreen({ navigation }) {
 			if (!result.cancelled) {
 				onSave(result);
 				console.log(result.uri);
-				setImage(result.uri);
 			}
 		} catch (E) {
 			console.log(E);

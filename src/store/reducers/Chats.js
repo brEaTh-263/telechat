@@ -14,6 +14,13 @@ const initialState = {
 export default (state = initialState, action) => {
 	switch (action.type) {
 		case GET_ALL_ROOMS: {
+			// let descMsgRooms = action.payload.map((room) => {
+			// 	let descMessages = room.messages.reverse();
+			// 	return {
+			// 		...room,
+			// 		messages: descMessages,
+			// 	};
+			// });
 			return {
 				rooms: action.payload,
 			};
@@ -28,7 +35,7 @@ export default (state = initialState, action) => {
 			const roomId = action.payload.roomId;
 			const editedRooms = state.rooms.map((room) => {
 				if (room._id === roomId) {
-					room.messages.push(action.payload.msg);
+					room.messages.unshift(action.payload.msg);
 				}
 				return room;
 			});
