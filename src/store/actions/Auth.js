@@ -2,6 +2,7 @@ import { url } from "../../constants/url";
 export const DID_TRY_AUTO_LOGIN = "DID_TRY_AUTO_LOGIN";
 export const SIGN_IN = "SIGN_IN";
 export const AUTO_LOGIN = "AUTO_LOGIN";
+export const CHANGE_IMAGE = "CHANGE_IMAGE";
 
 export const setDidTryAutoLogin = () => {
 	return async (dispatch) => {
@@ -102,6 +103,33 @@ export const sendPushToken = (pushToken, token) => {
 			} else {
 				throw new Error();
 			}
+		} catch (error) {
+			console.log(error);
+			throw new Error();
+		}
+	};
+};
+
+export const changeImage = (file, token) => {
+	return async (dispatch) => {
+		try {
+			const response = await fetch(`${url}/user/edit-dp`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "multipart/form-data",
+					"x-auth-token": token,
+				},
+				body: file,
+			});
+			const responseJson = await response.json();
+			console.log(responseJson);
+			if (response.status != 200) {
+				throw new Error();
+			}
+			dispatch({
+				type: CHANGE_IMAGE,
+				payload: responseJson.displayPicture,
+			});
 		} catch (error) {
 			console.log(error);
 			throw new Error();

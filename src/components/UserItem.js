@@ -44,11 +44,20 @@ export default function UserItem({
 				alignItems: "center",
 			}}
 		>
-			<Avatar.Image
-				size={60}
-				style={{ marginRight: 10 }}
-				source={require("../../assets/otp.png")}
-			/>
+			{displayPicture ? (
+				<Avatar.Image
+					size={60}
+					style={{ marginRight: 10 }}
+					source={{ uri: displayPicture }}
+				/>
+			) : (
+				<Avatar.Image
+					size={60}
+					style={{ marginRight: 10 }}
+					source={require("../../assets/otp.png")}
+				/>
+			)}
+
 			<View>
 				<Text
 					style={{

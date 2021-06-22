@@ -204,7 +204,12 @@ const ChatScreen = ({ route, navigation }) => {
 				>
 					<Ionicons name="arrow-back" size={24} color={Colors.primary} />
 				</TouchableOpacity>
-				<Avatar.Image size={48} source={require("../../assets/otp.png")} />
+				{receiverDisplayPicture ? (
+					<Avatar.Image size={48} source={{ uri: receiverDisplayPicture }} />
+				) : (
+					<Avatar.Image size={48} source={require("../../assets/otp.png")} />
+				)}
+
 				<Text
 					style={{
 						textTransform: "capitalize",

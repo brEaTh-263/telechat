@@ -1,4 +1,4 @@
-import { DID_TRY_AUTO_LOGIN, SIGN_IN } from "../actions/Auth";
+import { CHANGE_IMAGE, DID_TRY_AUTO_LOGIN, SIGN_IN } from "../actions/Auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const initialState = {
@@ -17,6 +17,12 @@ export default (state = initialState, action) => {
 			return {
 				...state,
 				didTryAutoLogin: true,
+			};
+		}
+		case CHANGE_IMAGE: {
+			return {
+				...state,
+				displayPicture: action.payload,
 			};
 		}
 		case SIGN_IN: {

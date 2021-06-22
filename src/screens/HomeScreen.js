@@ -204,7 +204,7 @@ export default function HomeScreen({ navigation }) {
 									count={count}
 									msg={item.messages[item.messages.length - 1].text}
 									_id={item._id}
-									displayPicture={item.displayPicture}
+									displayPicture={receiver.displayPicture}
 									name={receiver.name}
 									receiverId={receiver._id}
 									timestamp={item.messages[item.messages.length - 1].createdAt}

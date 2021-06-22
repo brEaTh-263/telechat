@@ -36,7 +36,14 @@ export default function SettingsScreen({ navigation }) {
 					style={styles.profileContainer}
 					onPress={() => navigation.navigate("Profile")}
 				>
-					<Avatar.Text label={userDetails.name[0].toUpperCase()} size={60} />
+					{userDetails.displayPicture ? (
+						<Avatar.Image
+							size={60}
+							source={{ uri: userDetails.displayPicture }}
+						/>
+					) : (
+						<Avatar.Text label={userDetails.name[0].toUpperCase()} size={60} />
+					)}
 					<View style={{ marginLeft: 25 }}>
 						<Text style={styles.name}>{userDetails.name}</Text>
 						<Text style={styles.phoneNumber}>
