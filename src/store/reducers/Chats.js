@@ -3,6 +3,7 @@ import {
 	GET_ROOM_DETAILS,
 	PUSH_MESSAGE,
 	RESET_NEW_MESSAGES,
+	REWRITE_MESSAGES,
 	SHOW_NEW_MESSAGES,
 } from "../actions/Chats";
 
@@ -15,6 +16,18 @@ export default (state = initialState, action) => {
 		case GET_ALL_ROOMS: {
 			return {
 				rooms: action.payload,
+			};
+		}
+		case REWRITE_MESSAGES: {
+			const roomId = action.payload.roomId;
+			const editedRooms = state.rooms.map((room) => {
+				if (room._id === roomId) {
+					room.messages = action.payload.msg;
+				}
+				return room;
+			});
+			return {
+				rooms: editedRooms,
 			};
 		}
 		case GET_ROOM_DETAILS: {

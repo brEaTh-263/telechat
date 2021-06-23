@@ -52,14 +52,18 @@ const ChatScreen = ({ route, navigation }) => {
 	}, []);
 
 	useEffect(() => {
+		socket.off("room_chats").on("room_chats", ({ messages, roomId }) => {
+			setMessages(messages);
+			dispatch(chatActions.rewriteMessages(messages, roomId));
+		});
+	}, []);
+
+	useEffect(() => {
 		if (roomId) {
 			roomDetails.map((room) => {
 				if (room._id === roomId) {
-					console.log(room.messages);
 					let reversedMessages = room.messages;
-					console.log("INITIALLY");
-					console.log("FINALLY");
-					console.log(reversedMessages);
+
 					setMessages((previousMessages) =>
 						GiftedChat.append(previousMessages, reversedMessages)
 					);

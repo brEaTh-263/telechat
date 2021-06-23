@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
 	SafeAreaView,
 	View,
@@ -23,11 +23,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const MAX_HEIGHT = Dimensions.get("window").height;
 
+Notifications.setNotificationHandler({
+	handleNotification: async () => ({
+		shouldShowAlert: true,
+		shouldPlaySound: false,
+		shouldSetBadge: false,
+	}),
+});
+
 export default function HomeScreen({ navigation }) {
 	const userDetails = useSelector((state) => state.Auth);
 	const rooms = useSelector((state) => state.Chats.rooms);
-
-	console.log(rooms);
 	const dispatch = useDispatch();
 	const responseListener = useRef();
 	const notificationListener = useRef();
@@ -58,67 +64,39 @@ export default function HomeScreen({ navigation }) {
 	useEffect(() => {
 		notificationListener.current =
 			Notifications.addNotificationReceivedListener(async (notification) => {
+				console.log("NOTIFICATION LISTENER");
+
 				const { roomId, content, room } = notification.request.content.data;
-				console.log(roomId);
-				console.log(content);
-				console.log(room);
-				console.log(rooms);
 				const existingRoom = await Promise.all(
 					rooms.filter((room) => {
-						console.log("INSIDE");
-						console.log(room._id);
-						console.log(notification.request.content.data.roomId);
 						return (
 							String(room._id) ===
 							String(notification.request.content.data.roomId)
 						);
 					})
 				);
-				// console.log(notification.request.content);
-
 				if (existingRoom.length > 0) {
 					console.log("DISPATCHING PUSH MESSAGE");
 					dispatch(chatActions.pushMessage(roomId, content));
 					dispatch(chatActions.showNewMessages(roomId, content));
 				} else {
 					console.log("DISPATCHING ROOM MESSAGE");
-					socket.emit("get_my_chats", { _id: userDetails._id });
+					dispatch(chatActions.getRoomDetails(room));
+					dispatch(chatActions.showNewMessages(roomId, content));
 				}
 			});
 
 		responseListener.current =
 			Notifications.addNotificationResponseReceivedListener(
 				async (response) => {
-					const { roomId, content, room } = response.request.content.data;
-					console.log(roomId);
-					console.log(content);
-					console.log(room);
-					// dispatch(chatActions.getRoomDetails(room));
-					console.log(rooms);
-					const existingRoom = await Promise.all(
-						rooms.filter((room) => {
-							console.log("INSIDE");
-							console.log(room._id);
-							console.log(response.request.content.data.roomId);
-							return (
-								String(room._id) ===
-								String(response.request.content.data.roomId)
-							);
-						})
-					);
-					// console.log(response.request.content);
-
-					console.log("EXISTING ROOM");
-					console.log(existingRoom);
-					if (existingRoom.length > 0) {
-						console.log("DISPATCHING PUSH MESSAGE");
-						dispatch(chatActions.pushMessage(roomId, content));
-						dispatch(chatActions.showNewMessages(roomId, content));
-					} else {
-						console.log("DISPATCHING ROOM MESSAGE");
-						dispatch(chatActions.getRoomDetails(room));
-						dispatch(chatActions.showNewMessages(roomId, content));
-					}
+					const { roomId, content, room } =
+						response.notification.request.content.data;
+					console.log("RESPONSE LISTENER");
+					socket.emit("chats", { roomId });
+					navigation.navigate("Chat", {
+						receiverId: content.user._id,
+						receiverName: content.user.name,
+					});
 				}
 			);
 
