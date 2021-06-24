@@ -1,1 +1,1 @@
-export const url = "https://8cea5829a964.ngrok.io";
+export const url = "https://pure-fortress-76075.herokuapp.com";

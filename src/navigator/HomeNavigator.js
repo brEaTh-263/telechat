@@ -6,12 +6,17 @@ import ChatScreen from "../screens/ChatScreen";
 import OtpScreen from "../screens/OtpScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import Colors from "../constants/Colors";
 
 const HomeStackNavigator = createStackNavigator();
 
 const HomeNavigator = () => {
 	return (
-		<HomeStackNavigator.Navigator screenOptions={{ headerShown: false }}>
+		<HomeStackNavigator.Navigator
+			screenOptions={{
+				headerShown: false,
+			}}
+		>
 			<HomeStackNavigator.Screen name="Home" component={HomeScreen} />
 			<HomeStackNavigator.Screen
 				name="SearchUsers"
