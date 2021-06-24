@@ -18,9 +18,7 @@ import { useDispatch } from "react-redux";
 import LoadingScreen from "./LoadingScreen";
 
 export default function OtpScreen({ navigation, route }) {
-	// const { phoneNumber, name } = route.params;
-	const phoneNumber = "";
-	const name = "";
+	const { phoneNumber, name } = route.params;
 	const [canSendOtp, setCanSendOtp] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [code, setCode] = useState("");

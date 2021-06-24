@@ -6,13 +6,24 @@
 		"orientation": "portrait",
 		"icon": "./assets/icon.png",
 		"backgroundColor": "##0c192b",
+		"plugins": [
+			[
+				"expo-notifications",
+				{
+					"icon": "./assets/splash.png",
+					"color": "#ffffff",
+					"sounds": "default",
+					"mode": "production"
+				}
+			]
+		],
 		"splash": {
 			"image": "./assets/splash.png",
 			"resizeMode": "contain",
 			"backgroundColor": "#ef6168"
 		},
 		"notification": {
-			"icon": "./assets/icon.png"
+			"icon": "./assets/conversation.png"
 		},
 		"updates": {
 			"fallbackToCacheTimeout": 0
