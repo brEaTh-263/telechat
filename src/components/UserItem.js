@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
 	container: {
 		flexDirection: "row",
 		borderBottomWidth: StyleSheet.hairlineWidth,
-		borderColor: "#888",
+		borderColor: "#3b3a3a",
 		padding: 25,
 		alignItems: "center",
 	},

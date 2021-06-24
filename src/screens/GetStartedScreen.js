@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import {
 	SafeAreaView,
 	StyleSheet,
+	Platform,
 	Image,
 	Text,
 	TouchableOpacity,
@@ -12,15 +13,15 @@ import {
 export default function SignInScreen({ navigation }) {
 	return (
 		<SafeAreaView style={styles.container}>
+			<Text style={styles.title}>Telechat</Text>
 			<Image
 				style={styles.image}
 				resizeMode="contain"
-				source={require("../../assets/hand-wave.png")}
+				source={require("../../assets/get_started.png")}
 			/>
-			<Text style={styles.title}>Let's Have Chat Together</Text>
 			<Text style={styles.description}>
-				Mobile Messaging is rapidly becoming the primary way users socially
-				engage on mobile
+				A world without communication is meaningless. So, you have to message
+				everyone now.
 			</Text>
 			<TouchableOpacity
 				onPress={() => navigation.navigate("SignIn")}
@@ -43,27 +44,29 @@ const styles = StyleSheet.create({
 		backgroundColor: Colors.background,
 		overflow: "hidden",
 		alignItems: "center",
+		paddingTop: Platform.OS === "android" ? 25 : 0,
 	},
 	image: {
-		width: "100%",
-		height: "50%",
+		width: "90%",
+		height: "45%",
 		alignSelf: "center",
-		marginTop: 45,
+		marginTop: 30,
 	},
 	title: {
 		color: "#fff",
-		fontSize: 30,
+		fontSize: 50,
 		width: 200,
 		marginHorizontal: 40,
-		marginVertical: 30,
-		fontWeight: "700",
+		fontFamily: "logo",
+		marginTop: 30,
 		textAlign: "center",
 	},
 	description: {
 		color: "#fff",
 		fontSize: 15,
 		textAlign: "center",
-		width: "65%",
+		width: "68%",
+		letterSpacing: 1,
 	},
 	buttonBackground: {
 		width: 80,

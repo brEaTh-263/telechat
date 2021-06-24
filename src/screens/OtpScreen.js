@@ -18,7 +18,9 @@ import { useDispatch } from "react-redux";
 import LoadingScreen from "./LoadingScreen";
 
 export default function OtpScreen({ navigation, route }) {
-	const { phoneNumber, name } = route.params;
+	// const { phoneNumber, name } = route.params;
+	const phoneNumber = "";
+	const name = "";
 	const [canSendOtp, setCanSendOtp] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [code, setCode] = useState("");
@@ -60,11 +62,10 @@ export default function OtpScreen({ navigation, route }) {
 			>
 				<Ionicons name="arrow-back" size={24} color={Colors.primary} />
 			</TouchableOpacity>
-			<View style={{ maxHeight: "10%", height: 100 }} />
 			<Image
 				style={styles.imageStyle}
 				resizeMode="contain"
-				source={require("../../assets/otp.png")}
+				source={require("../../assets/otp_page.png")}
 			/>
 			<Text style={styles.title}>Verification Code</Text>
 			<Text style={styles.subtitle}>
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
 	},
 	imageStyle: {
 		width: 150,
-		height: "15%",
+		height: "20%",
 		marginVertical: 15,
 	},
 	title: {

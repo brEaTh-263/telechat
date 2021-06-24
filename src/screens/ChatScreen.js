@@ -84,11 +84,7 @@ const ChatScreen = ({ route, navigation }) => {
 		};
 	}, []);
 	useEffect(() => {
-		// console.log("Getting some message");
-
 		socket.off("private message").on("private message", ({ content, from }) => {
-			// console.log(`I am ${userDetails.name}`);
-			// console.log(socket.auth.roomId);
 			dispatch(chatActions.pushMessage(socket.auth.roomId, content));
 
 			if (!navigator.isFocused()) {
